@@ -1,23 +1,33 @@
 # Contributing to A2A Drift
 
-Thanks for helping improve agent-card validation and endpoint probing. Keep
-changes focused, describe the behavior you are changing, and include a regression
-test for a bug fix.
+Thanks for your interest in this project, and for helping improve agent-card
+validation and endpoint probing. Keep changes focused, describe the behavior you
+are changing, and include a regression test for a bug fix.
 
 ## Development setup
 
-You need Git and Python 3.9 or newer, as declared in `pyproject.toml`. Fork the
-repository on GitHub, then clone your fork. From the repository root, create an
-isolated environment:
+You need Git and Python 3.9 or newer, as declared in `pyproject.toml`.
 
-```sh
-git clone https://github.com/YOUR-USERNAME/a2a-drift.git
-cd a2a-drift
-python -m venv .venv
-```
+1. Fork the repository on GitHub, then clone your fork:
 
-Replace `YOUR-USERNAME` with your GitHub username. If your system calls Python 3
-`python3`, use that command to create the environment.
+   ```sh
+   git clone https://github.com/YOUR-USERNAME/a2a-drift.git
+   cd a2a-drift
+   ```
+
+   Replace `YOUR-USERNAME` with your GitHub username.
+
+2. Create a branch for your work, for example `git switch -c fix/retry-behavior`
+   or `git checkout -b my-feature`.
+
+3. From the repository root, create an isolated environment:
+
+   ```sh
+   python -m venv .venv
+   ```
+
+   If your system calls Python 3 `python3`, use that command to create the
+   environment.
 
 Activate it on macOS/Linux:
 
@@ -47,7 +57,8 @@ checkout without relying on an installed console script.
 
 ## Tests
 
-Run from the repository root:
+Make sure tests pass locally before opening a pull request. Run from the
+repository root:
 
 ```sh
 python -m pytest -q
@@ -71,8 +82,10 @@ private agent cards, or customer responses in fixtures or issue reports.
 
 ## Code style
 
-Use four-space indentation and descriptive names, and keep Python 3.9 compatibility.
-For Python changes, inspect Ruff's diagnostics and formatting suggestions:
+Follow the existing code style, and run the project's linters and formatters if
+it has them. Use four-space indentation and descriptive names, and keep Python 3.9
+compatibility. For Python changes, inspect Ruff's diagnostics and formatting
+suggestions:
 
 ```sh
 python -m ruff check .
@@ -86,27 +99,47 @@ make a local check pass. Record any remaining failures in the PR.
 
 ## Issues and pull requests
 
-1. Check existing issues and PRs to avoid duplicating work. For a larger feature,
-   explain the proposed behavior in an issue before implementing it.
-2. Create a branch in your fork, for example `git switch -c fix/retry-behavior`.
-3. Make a focused change, add tests where appropriate, and update usage examples
+### Reporting issues
+
+Before opening an issue, check existing issues and PRs to avoid duplicating work.
+For a larger feature, explain the proposed behavior in an issue before implementing
+it. When reporting a problem, open an issue at
+[GitHub Issues](https://github.com/yunaremaia/a2a-drift/issues) with:
+
+- A clear description of the problem
+- Steps to reproduce
+- Expected vs actual behavior
+- Your environment (OS, version)
+
+### Submitting pull requests
+
+1. Make a focused change, add tests where appropriate, and update usage examples
    if behavior changes.
-4. Run the tests and checks above. Review `git diff --check` and your diff before
+2. Run the tests and checks above. Review `git diff --check` and your diff before
    committing; generated reports and environment files should stay out of the PR.
-5. Use a short, descriptive commit message. Existing history uses prefixes such
+3. Use a short, descriptive commit message. Existing history uses prefixes such
    as `fix:` and `feat:`; `docs:` and `test:` also describe focused contributions.
-6. Open a PR against this repository's default branch. Link the issue, describe
-   the before/after behavior, and list the exact checks and Python version used,
+4. Open a PR against this repository's default branch, with a clear description of
+   the changes. Link or reference any related issue numbers, describe the
+   before/after behavior, and list the exact checks and Python version used,
    including failures or checks you could not run.
 
 Review may request changes to behavior, tests, documentation, or scope. Keep
 follow-up changes in the same PR and explain how you addressed the feedback.
 Maintainer availability varies; there is no guaranteed review turnaround.
 
+## Code of Conduct
+
+This project follows a
+[Code of Conduct](https://github.com/yunaremaia/a2a-drift/blob/main/CODE_OF_CONDUCT.md).
+By participating, you agree to uphold it.
+
 ## Private security reports
 
 Do not publish an exploitable vulnerability, sensitive endpoint, or credentials
-in a public issue or PR. Contact the package maintainer privately at
+in a public issue or PR. See
+[SECURITY.md](https://github.com/yunaremaia/a2a-drift/blob/main/SECURITY.md) for
+the policy. Contact the package maintainer privately at
 [yunare@gmail.com](mailto:yunare@gmail.com), the author address listed in
 `pyproject.toml`, with the subject `a2a-drift security report`.
 
