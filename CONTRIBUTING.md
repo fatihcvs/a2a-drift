@@ -48,12 +48,12 @@ Install the editable package and development tools:
 
 ```sh
 python -m pip install -e . pytest pytest-cov ruff
-python cli.py --help
+python -m a2a_drift.cli --help
 ```
 
 Development tools are installed explicitly because the project does not currently
-define a development dependency extra. `python cli.py` runs the CLI from this
-checkout without relying on an installed console script.
+define a development dependency extra. `python -m a2a_drift.cli` runs the CLI
+module from this checkout without relying on an installed console script.
 
 ## Tests
 
@@ -65,7 +65,8 @@ python -m pytest -q
 python -m pytest -q --cov=a2a_drift --cov-report=term-missing
 ```
 
-Tests currently live in `test_a2a_drift.py` and `test_retry.py`. To narrow a run:
+Tests currently live in `test_a2a_drift.py`, `test_retry.py`, `test_cli.py`, and
+`test_jsonrpc_conformance.py`. To narrow a run:
 
 ```sh
 python -m pytest -q test_retry.py
@@ -92,8 +93,9 @@ python -m ruff check .
 python -m ruff format --check .
 ```
 
-Ruff configuration and automated quality gates are not set up yet; these commands
-use Ruff's defaults and may report existing issues. Distinguish those from your
+CI runs pytest on Python 3.10–3.12 and `ruff check --isolated --select E,F,I .`.
+No project-specific Ruff configuration is defined; the local commands above use
+Ruff's defaults and may report existing issues. Distinguish those from your
 changes. Avoid reformatting unrelated files or adding broad suppressions just to
 make a local check pass. Record any remaining failures in the PR.
 
@@ -130,9 +132,8 @@ Maintainer availability varies; there is no guaranteed review turnaround.
 
 ## Code of Conduct
 
-This project follows a
-[Code of Conduct](https://github.com/yunaremaia/a2a-drift/blob/main/CODE_OF_CONDUCT.md).
-By participating, you agree to uphold it.
+Be respectful and constructive. Reviews are about the code, not the person who
+wrote it.
 
 ## Private security reports
 

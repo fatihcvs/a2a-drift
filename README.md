@@ -25,8 +25,18 @@ The A2A protocol (25k+ stars, v1.0 since March 2026) is the Linux Foundation sta
 
 ## Install
 
+Not published to PyPI yet. Install from source:
+
 ```bash
-pip install a2a-drift
+pip install git+https://github.com/yunaremaia/a2a-drift.git
+```
+
+or, for development:
+
+```bash
+git clone https://github.com/yunaremaia/a2a-drift.git
+cd a2a-drift
+pip install -e .
 ```
 
 ## Usage
@@ -43,8 +53,11 @@ a2a-drift check https://example.com/.well-known/agent-card.json --format json
 # Output as SARIF (for GitHub Advanced Security)
 a2a-drift check https://example.com/.well-known/agent-card.json --format sarif --output results.sarif
 
-# Validate against a specific spec version
-a2a-drift check https://example.com/.well-known/agent-card.json --spec-version 1.0
+# Validate against a specific spec version (drift is measured against this target)
+a2a-drift check https://example.com/.well-known/agent-card.json --spec-version 0.3
+
+# Refuse internal/loopback targets (use when the URL comes from untrusted input)
+a2a-drift check "$AGENT_CARD_URL" --deny-internal
 
 # Probe live endpoints
 a2a-drift probe https://example.com/a2a --method message/send --params '{"message": {"role": "user", "parts": [{"type": "text", "text": "hello"}]}}'
@@ -52,6 +65,11 @@ a2a-drift probe https://example.com/a2a --method message/send --params '{"messag
 # Batch check multiple agents
 a2a-drift batch --file agents.txt
 ```
+
+`check`, `probe` and `batch` all accept `--format text|json|sarif`,
+`--output FILE`, `--retries N` (N >= 1), `--timeout SECONDS`,
+`--deny-internal` and `--allow-internal`. Exit code is `0` when the target is
+compliant, `1` when any error-severity drift is found, `2` on a usage error.
 
 ### Library
 
@@ -72,15 +90,21 @@ print(result.is_jsonrpc_compliant)
 print(result.response_time_ms)
 ```
 
-### GitHub Action
+### CI
+
+Run the CLI in a workflow and upload the SARIF report to GitHub Code Scanning:
 
 ```yaml
-- uses: yunaremaia/a2a-drift@v1
+- run: pip install git+https://github.com/yunaremaia/a2a-drift.git
+- run: a2a-drift check "$AGENT_CARD_URL" --deny-internal --format sarif --output a2a-drift.sarif
+- uses: github/codeql-action/upload-sarif@v3
   with:
-    url: https://your-agent.com/.well-known/agent-card.json
-    spec-version: '1.0'
-    fail-on-drift: true
+    sarif_file: a2a-drift.sarif
 ```
+
+The CLI exits 1 when any error-severity drift is found, so it works as a
+pass/fail gate directly. A prebuilt `action.yml` is on the roadmap but does
+not exist yet.
 
 ## Drift Detection
 
@@ -100,14 +124,31 @@ print(result.response_time_ms)
 - [A2A v0.3](https://a2a-protocol.org/v0.3/) — legacy support with migration warnings
 - [A2A Proto](https://github.com/a2aproject/A2A/tree/main/specification) — protocol buffer definitions
 
+## Security
+
+`a2a-drift` fetches URLs supplied on the command line. When those URLs come from
+untrusted input (a CI job, a webhook, a shared config file), pass
+`--deny-internal` to refuse loopback, private, link-local (including cloud
+metadata at `169.254.169.254`), reserved and multicast addresses -- the SSRF
+class of attack tracked as CWE-918. Internal checks stay allowed by default, so
+local development against `http://127.0.0.1:8080` keeps working; `--deny-internal`
+is the hardening switch and `--allow-internal` overrides it explicitly.
+
+For the library API, `validate_url(url, allow_internal=False)` returns an error
+message or `None`, and `AgentCardChecker` / `EndpointProber` accept
+`allow_internal=`.
+
+To report a vulnerability, please see [SECURITY.md](SECURITY.md).
+
 ## Roadmap
 
-- [ ] Agent card schema validation (v1.0 + v0.3)
-- [ ] Live endpoint probing (message/send, tasks/get, tasks/cancel)
-- [ ] JSON-RPC 2.0 conformance checks
-- [ ] Spec version drift detection
-- [ ] SARIF output
-- [ ] GitHub Action
+- [x] Agent card schema validation (v1.0 + v0.3)
+- [x] Live endpoint probing (message/send, tasks/get, tasks/cancel)
+- [x] JSON-RPC 2.0 conformance checks
+- [x] Spec version drift detection
+- [x] SARIF output
+- [ ] Custom conformance profiles (issue #5)
+- [ ] Prebuilt GitHub Action (`action.yml`) — not yet available
 - [ ] CI/CD integration (exit codes, JSON output)
 - [ ] Streaming (SSE) capability verification
 - [ ] Authentication/transport security checks
